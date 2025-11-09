@@ -8,6 +8,8 @@ public class OrderPage {
     private WebDriver driver;
 
     // Локаторы для формы заказа (описаны только те, что будут использованы в тестах)
+    // Заголовок "Про аренду"
+    private By rentHeader = By.xpath(".//div[text()='Про аренду']");
     // Поле "Имя"
     private By nameField = By.xpath(".//input[@placeholder='* Имя']");
     // Поле "Фамилия"
@@ -15,7 +17,11 @@ public class OrderPage {
     // Поле "Адрес"
     private By addressField = By.xpath(".//input[@placeholder='* Адрес: куда привезти заказ']");
     // Поле "Станция метро"
-    private By metroStationField = By.xpath(".//input[@placeholder='* Станция метро']");
+    private By metroInputField = By.xpath("//input[@placeholder='* Станция метро']");
+    private String metroInList = ".//div[contains(@class, 'Order_Text') and contains(text(), '%s')]";
+    private By metroStationField(String metro) {
+        return By.xpath(String.format(metroInList, metro));
+    }
     // Поле "Телефон"
     private By phoneField = By.xpath(".//input[@placeholder='* Телефон: на него позвонит курьер']");
     // Кнопка "Далее"
@@ -58,7 +64,8 @@ public class OrderPage {
         driver.findElement(addressField).sendKeys(address);
     }
     public void fillMetroStationInput (String metro){
-        driver.findElement(metroStationField).sendKeys(metro);
+        driver.findElement(metroInputField).click();
+        driver.findElement(metroStationField(metro)).click();
     }
     public void fillPhoneInput (String phone){
         driver.findElement(phoneField).sendKeys(phone);
@@ -88,6 +95,10 @@ public class OrderPage {
         driver.findElement(confirmButton).click();
     }
 
+    public void clickRentHeader(){
+        driver.findElement(rentHeader).click();
+    }
+
     // кажется, будет лучше объединить часть методов в более крупный блок, чтобы сами тесты были лаконичнее + если будут изменения в форме, то менять можно будет только в описании страницы
     public void fillFirstForm (String name, String surname, String address, String metro, String phone) {
         fillNameInput(name);
@@ -99,6 +110,7 @@ public class OrderPage {
     // здесь не заполняются необязательные поля, чтобы можно было проводить тесты с разным набором данным (полная проверка и проверка только обязательных полей)
     public void fillSecondForm (String date, String days) {
         fillDateInput(date);
+        clickRentHeader(); // костыльное решение, чтобы сделать поле срока аренды видимым (закрыть "календарь"). Не смогла придумать лучше :(
         clickOrderLengthList();
         clickOrderLengthDays(days);
     }

@@ -39,6 +39,8 @@ public class OrderPage {
     private By orderButtonFormFilled = By.xpath(".//button[contains(@class, 'Middle')][text()='Заказать']");
     // Кнопка "Да" (во всплывающем окне)
     private By confirmButton = By.xpath(".//button[text()='Да']");
+    // Успешно оформленный заказ (всплывашка)
+    private By successfulOrder = By.xpath(".//div[text()='Заказ оформлен']");
 
     // конструктор класса
     public OrderPage(WebDriver driver) {
@@ -84,5 +86,24 @@ public class OrderPage {
     }
     public void clickConfirmButton(){
         driver.findElement(confirmButton).click();
+    }
+
+    // кажется, будет лучше объединить часть методов в более крупный блок, чтобы сами тесты были лаконичнее + если будут изменения в форме, то менять можно будет только в описании страницы
+    public void fillFirstForm (String name, String surname, String address, String metro, String phone) {
+        fillNameInput(name);
+        fillSurnameInput(surname);
+        fillAddressInput(address);
+        fillMetroStationInput(metro);
+        fillPhoneInput(phone);
+    }
+    // здесь не заполняются необязательные поля, чтобы можно было проводить тесты с разным набором данным (полная проверка и проверка только обязательных полей)
+    public void fillSecondForm (String date, String days) {
+        fillDateInput(date);
+        clickOrderLengthList();
+        clickOrderLengthDays(days);
+    }
+
+    public void checkOrderSuccessfull(){
+        driver.findElement(successfulOrder).isDisplayed();
     }
 }
